@@ -29,7 +29,10 @@ submission/*.pdf
 # ---- Agent / tooling files ----
 .claude/
 .claude
-
+AGENTS.md
+BUILD_PROMPT.md
+CLAUDE.md
+.cursor/
 # ---- Editors / IDE ----
 .vscode/
 .idea/
