@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<style>
+@font-face{font-family:"Space Grotesk";font-weight:700;src:url("../web/fonts/SpaceGrotesk-700.woff2") format("woff2")}
+@font-face{font-family:"Space Grotesk";font-weight:500;src:url("../web/fonts/SpaceGrotesk-500.woff2") format("woff2")}
+@font-face{font-family:"Inter";font-weight:400;src:url("../web/fonts/Inter-400.woff2") format("woff2")}
+@font-face{font-family:"Inter";font-weight:600;src:url("../web/fonts/Inter-600.woff2") format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-weight:700;src:url("../web/fonts/JetBrainsMono-700.woff2") format("woff2")}
+:root{
+  --ink:#131a2c;--mut:#5c6781;--faint:#8a93a8;--line:#e6e9f3;
+  --accent:#4f63ff;--accent-ink:#2f3fd0;--teal:#0fb6a6;--amber:#f5a524;--coral:#f0436a;--ai:#7c6cff;
+  --disp:"Space Grotesk",system-ui,sans-serif;--body:"Inter",system-ui,sans-serif;--mono:"JetBrains Mono",monospace;
+}
+@page{size:13.333in 7.5in;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.slide{width:13.333in;height:7.5in;padding:0.72in 0.8in;position:relative;overflow:hidden;
+  page-break-after:always;background:#fff;display:flex;flex-direction:column}
+.slide.alt{background:linear-gradient(160deg,#f4f6fc,#eaeef9)}
+.kic{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-family:var(--disp);font-weight:700;font-size:58px;letter-spacing:-.02em;line-height:1.02}
+h2{font-family:var(--disp);font-weight:700;font-size:33px;letter-spacing:-.01em;margin:6px 0 14px}
+p,li{font-size:17px;line-height:1.55;color:var(--mut)}
+b{color:var(--ink)}
+.foot{position:absolute;left:0.8in;right:0.8in;bottom:0.34in;display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.04em;border-top:1px solid var(--line);padding-top:9px}
+.logo{width:46px;height:46px;border-radius:13px;position:relative;
+  background:conic-gradient(from 210deg,var(--teal),var(--amber),var(--coral),var(--teal))}
+.logo::after{content:"";position:absolute;inset:8px;border-radius:6px;background:#fff}
+.row{display:flex;gap:.5in;flex:1;min-height:0}
+.col{flex:1;display:flex;flex-direction:column;justify-content:center}
+.shot{flex:1.05;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 18px 50px -22px rgba(20,30,60,.4);
+  background:#f4f6fc;display:flex;align-items:center;justify-content:center}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:left top}
+ul{list-style:none;display:flex;flex-direction:column;gap:13px;margin-top:6px}
+li{padding-left:26px;position:relative}
+li::before{content:"";position:absolute;left:0;top:9px;width:9px;height:9px;border-radius:3px;background:var(--accent)}
+.stats{display:flex;gap:.5in;margin-top:10px}
+.stat .v{font-family:var(--mono);font-weight:700;font-size:46px;line-height:1;letter-spacing:-.02em}
+.stat .k{font-size:13.5px;color:var(--mut);margin-top:8px;max-width:18ch}
+.c-teal{color:var(--teal)}.c-amber{color:#c77f08}.c-coral{color:var(--coral)}.c-ai{color:var(--ai)}.c-acc{color:var(--accent-ink)}
+.badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:6px}
+.bf{color:#053b35;background:#c8f3ee}.be{color:#4a3500;background:#fdebc7}.ba{color:#34268f;background:#efeaff}
+.tag{display:inline-block;font-family:var(--disp);font-weight:500;color:var(--amber);font-size:22px;margin-top:18px}
+.pill{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--mut);
+  border:1px solid var(--line);border-radius:999px;padding:7px 14px;margin-top:26px;width:max-content}
+.big{font-family:var(--mono);font-weight:700;font-size:120px;line-height:.9;letter-spacing:-.04em;color:var(--coral)}
+.lead{font-size:19px;color:var(--mut);max-width:42ch}
+.note{font-size:13px;color:var(--faint);margin-top:14px;font-style:italic}
+.links{display:flex;flex-direction:column;gap:10px;margin-top:8px;font-size:18px}
+.links a,.links span.k{font-family:var(--mono);font-size:15px;color:var(--accent-ink)}
+.kv{display:flex;gap:10px;align-items:baseline}.kv .k{width:120px;color:var(--faint);font-family:var(--mono);font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- 1 TITLE -->
+<section class="slide alt">
+  <div style="display:flex;align-items:center;gap:16px"><div class="logo"></div>
+    <div class="kic">Flipkart GRiD · Prototype Round 2</div></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <h1>Pravah <span style="font-family:var(--disp);font-weight:500;font-size:30px;color:var(--faint)">प्रवाह · “flow”</span></h1>
+    <div class="tag">Stop counting tickets. Start recovering time.</div>
+    <p class="lead" style="margin-top:22px">A glass-box command centre that turns Bengaluru's parking-violation
+      data into <b>where to send officers next week</b> — measured in commuter-time, with a reason on every number.</p>
+    <div class="pill"><span class="badge bf">FACT</span> measured · <span class="badge be">EST</span> modelled ·
+      <span class="badge ba">AI</span> predicted</div>
+  </div>
+  <div class="foot"><span>PS1 · Parking-Induced Congestion</span><span>Pravah</span></div>
+</section>
+
+<!-- 2 PROBLEM -->
+<section class="slide">
+  <div class="kic">The problem</div>
+  <h2>Enforcement is reactive, and measured in the wrong currency</h2>
+  <div class="row">
+    <div class="col">
+      <ul>
+        <li>Police count <b>violations</b> and deploy by <b>gut</b> — but 500 helmet tickets can cause zero
+          congestion, while one truck at a chokepoint costs thousands of vehicle-hours.</li>
+        <li>There is <b>no impact heat-map</b> and no easy way to <b>prioritise</b> junctions.</li>
+        <li>The data only shows where officers already stood — so models trained on it just tell police
+          to keep patrolling the same corners. <b>The data lies by omission.</b></li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="stats" style="flex-direction:column;gap:24px">
+        <div class="stat"><div class="v c-acc">298,445</div><div class="k">real parking cases analysed (21.4 weeks)</div></div>
+        <div class="stat"><div class="v c-coral">~93%</div><div class="k">of all violations are parking — the dominant load</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>PS1 · Parking-Induced Congestion</span><span>02</span></div>
+</section>
+
+<!-- 3 INSIGHT -->
+<section class="slide alt">
+  <div class="kic">The insight</div>
+  <h2>The city goes dark after 3pm</h2>
+  <div class="row">
+    <div class="col" style="flex:.85">
+      <div class="big">0.85%</div>
+      <p style="margin-top:14px"><b>of all tickets</b> land in the 3–9pm rush — exactly when congestion peaks.
+        Junctions that <b>are</b> watched in the evening still write ~15% of tickets then, so it's an
+        <b>enforcement gap, not reality.</b> <span class="badge bf">FACT</span></p>
+      <p style="margin-top:14px"><b>12 phantom hotspots</b> — thousands of violations clustered off the official
+        named-junction radar. <span class="badge bf">FACT</span></p>
+    </div>
+    <div class="shot"><img src="snapshots/01-overview.png" alt="Overview"/></div>
+  </div>
+  <div class="foot"><span>The blind spot is the opportunity</span><span>03</span></div>
+</section>
+
+<!-- 4 SOLUTION -->
+<section class="slide">
+  <div class="kic">The solution</div>
+  <h2>One pressure score. A map you can actually read.</h2>
+  <div class="row">
+    <div class="col">
+      <ul>
+        <li>Every violation re-expressed as <b>hours of stuck traffic</b> (severity × vehicle footprint).</li>
+        <li>One <b>pressure score (0–100)</b> per junction — like an air-quality index for congestion.</li>
+        <li>A <b>map-first command centre</b> on a real Bengaluru street base — tap any junction for the full story.
+          Runs <b>100% offline</b>: no tiles, no APIs.</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="snapshots/02-city-map.png" alt="City pressure map"/></div>
+  </div>
+  <div class="foot"><span>Pressure, not ticket counts</span><span>04</span></div>
+</section>
+
+<!-- 5 GLASS BOX -->
+<section class="slide alt">
+  <div class="kic">Glass box, by design</div>
+  <h2>Every score decomposes. Every number can be challenged.</h2>
+  <div class="row">
+    <div class="col">
+      <ul>
+        <li>Pressure = <b>how bad the parking is</b> + <b>evening blind spot</b> + <b>number of cases</b> — shown in points.</li>
+        <li>Click any junction → the <b>raw tickets</b> behind the score, and the cost of ignoring it.</li>
+        <li><b>Plain language only</b> — no jargon a constable can't act on. Tune the priorities and the whole
+          city <b>re-ranks live</b> (the client mirrors the Python engine exactly).</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="snapshots/03-junction-glassbox.png" alt="Junction glass box"/></div>
+  </div>
+  <div class="foot"><span>Trust you can defend to an RTI request</span><span>05</span></div>
+</section>
+
+<!-- 6 AI -->
+<section class="slide">
+  <div class="kic">The model · interpretable, not a black box</div>
+  <h2>It predicts which junctions get worse next week</h2>
+  <div class="row">
+    <div class="col">
+      <div class="stats">
+        <div class="stat"><div class="v c-ai">0.844</div><div class="k">R² on held-out weeks 16–20 the model never saw</div></div>
+        <div class="stat"><div class="v c-teal">+6.2%</div><div class="k">more accurate than “next week = last week”</div></div>
+      </div>
+      <ul style="margin-top:22px">
+        <li>Gradient-boosted trees + <b>SHAP</b> reasons — <b>never a neural net</b>, so every call is explainable.</li>
+        <li>Forward-validated in time, built only on the parking data's own weekly trend. Flags <b>35</b> worsening junctions.</li>
+      </ul>
+      <p class="note">All model output labelled AI/EST; the trajectory it learns from is FACT.</p>
+    </div>
+    <div class="shot"><img src="snapshots/05-forecast.png" alt="Forecast"/></div>
+  </div>
+  <div class="foot"><span>Reactive → forward-looking</span><span>06</span></div>
+</section>
+
+<!-- 7 DEPLOYMENT -->
+<section class="slide alt">
+  <div class="kic">From insight to action</div>
+  <h2>An officer-deployment plan — with a reason on every pick</h2>
+  <div class="row">
+    <div class="col">
+      <ul>
+        <li>Set your real officer count → Pravah places them to <b>clear the most stuck-traffic hours</b>,
+          with a one-line reason and an <b>equity check</b> across police areas.</li>
+        <li><b>We're honest:</b> ticket-count and impact correlate 0.98, so re-ranking alone adds only ~3–5%.</li>
+        <li>The decisive win is <b>structural</b> — Pravah's picks cover the evening blind hours and phantom
+          spots that count-based patrols <b>never see</b>.</li>
+      </ul>
+    </div>
+    <div class="shot"><img src="snapshots/04-deployment.png" alt="Deployment"/></div>
+  </div>
+  <div class="foot"><span>Pravah recommends — an officer decides</span><span>07</span></div>
+</section>
+
+<!-- 8 TRUST + STACK -->
+<section class="slide">
+  <div class="kic">Why it earns trust</div>
+  <h2>Honest inputs → transparent reasoning → human decides</h2>
+  <div class="row">
+    <div class="col">
+      <ul>
+        <li><b>FACT / EST / AI</b> on every figure; <b>plain language</b> everywhere.</li>
+        <li><b>Only the provided dataset</b> for analysis; no external/live feeds. Demo runs fully offline.</li>
+        <li><b>Coverage-normalised</b> features correct the enforcement bias instead of reinforcing it.</li>
+        <li><b>Human-in-the-loop</b> — recommend, never auto-dispatch.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h2 style="font-size:22px;margin-bottom:10px">Under the hood</h2>
+      <ul>
+        <li>Pure Python engine: <b>pipeline → features → pressure / optimise / model</b>, wrapped by explain / validate / equity.</li>
+        <li>Vanilla offline web (HTML/CSS/JS), self-hosted fonts, bundled OSM street basemap.</li>
+        <li><b>92 automated checks green</b> (unit + data-integrity + browser end-to-end).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Glass box, never black box</span><span>08</span></div>
+</section>
+
+<!-- 9 CLOSE -->
+<section class="slide alt">
+  <div style="display:flex;align-items:center;gap:14px"><div class="logo"></div>
+    <div class="kic">Pravah · Flipkart GRiD Round 2</div></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <h1 style="font-size:44px">Stop counting tickets.<br>Start recovering time.</h1>
+    <div style="margin-top:30px;display:flex;flex-direction:column;gap:12px">
+      <div class="kv"><span class="k">Repository</span><span class="links"><span class="k">github.com/anpixelartist/pravah</span></span></div>
+      <div class="kv"><span class="k">Live demo</span><span class="links"><span class="k">anpixelartist.github.io/pravah</span></span></div>
+      <div class="kv"><span class="k">Runs offline</span><span style="font-size:15px">double-click <span class="links"><span class="k">web/index.html</span></span> — no internet needed</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>PS1 · Parking-Induced Congestion</span><span>Thank you</span></div>
+</section>
+
+</body>
+</html>
