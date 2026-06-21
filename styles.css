@@ -81,6 +81,13 @@ button{font-family:inherit;cursor:pointer}
 .node:hover{transform:translate(-50%,-50%) scale(1.45);z-index:6}
 .node.sel{transform:translate(-50%,-50%) scale(1.7);z-index:7;
   border-color:#fff;box-shadow:0 0 0 4px var(--accent-weak),0 0 0 6px var(--accent),0 6px 18px rgba(20,30,60,.3)}
+.node.dim{opacity:.18!important;filter:saturate(.5)}
+.node.rising{opacity:1!important;z-index:6;background:var(--coral)!important;
+  transform:translate(-50%,-50%) scale(1.5);border-color:#fff;
+  box-shadow:0 0 0 3px rgba(240,67,106,.28),0 4px 14px rgba(240,67,106,.5)}
+.node.rising:hover{transform:translate(-50%,-50%) scale(1.9)}
+.node.rising::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--coral);
+  opacity:.55;animation:pulse 2.4s ease-out infinite}
 .ph{position:absolute;transform:translate(-50%,-50%);border:2px dashed var(--coral);
   border-radius:50%;width:34px;height:34px;pointer-events:none;opacity:.8}
 .ph::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--coral);
@@ -296,6 +303,28 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:var(--tx-2);box-shadow:var(--sh-2);
   backdrop-filter:blur(8px);max-width:280px;animation:pop var(--dur-2) var(--ease) both}
 .hint-card b{color:var(--tx)}
+
+/* use-bar: how to use a panel */
+.usebar{background:var(--accent-weak);border:1px solid #dfe3ff;border-radius:var(--r-sm);padding:11px 13px;
+  font-size:12px;line-height:1.5;color:var(--tx-2);margin-bottom:16px}
+.usebar b{color:var(--accent-ink)}
+
+/* riser locate cue */
+.riser .loc{font-family:var(--body);font-weight:600;font-size:10.5px;color:var(--accent-ink);opacity:0;transition:opacity var(--dur)}
+.riser:hover .loc,.riser:focus-visible .loc{opacity:1}
+
+/* live re-rank preview (What matters) */
+.wpreview{display:flex;flex-direction:column;gap:6px}
+.wprow{display:grid;grid-template-columns:20px 1fr auto auto;gap:9px;align-items:center;padding:8px 10px;
+  border-radius:var(--r-sm);background:var(--surface-2);border:1px solid var(--line);transition:background var(--dur)}
+.wprow.top{background:var(--accent-weak);border-color:#dfe3ff}
+.wprow .rk{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--tx-3);text-align:center}
+.wprow.top .rk{color:var(--accent-ink)}
+.wprow .nm{font-size:12.5px;font-weight:600;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wprow .mv{font-family:var(--mono);font-size:10.5px;font-weight:700}
+.wprow .mv.up{color:var(--teal)} .wprow .mv.down{color:var(--coral)} .wprow .mv.flat{color:var(--tx-3)}
+.wprow .pv{font-family:var(--mono);font-weight:700;font-size:14px;color:#fff;min-width:32px;text-align:center;
+  padding:2px 0;border-radius:7px}
 
 /* ===================== responsive: bottom sheet on mobile ===================== */
 @media(max-width:680px){
