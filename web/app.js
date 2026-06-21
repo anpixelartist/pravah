@@ -123,7 +123,8 @@
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, mapW, mapH);
     g.save(); g.translate(cam.tx, cam.ty); g.scale(cam.s, cam.s);
     if (heatCanvas) {                            // density UNDER the streets, faded as you zoom in
-      g.globalAlpha = Math.max(0.2, 1 - (cam.s - 1) * 0.17); g.drawImage(heatCanvas, 0, 0, mapW, mapH); g.globalAlpha = 1;
+      const fc = ST.panel === 'forecast' ? 0.4 : 1;   // calm the heat so forecast markers read
+      g.globalAlpha = Math.max(0.2, 1 - (cam.s - 1) * 0.17) * fc; g.drawImage(heatCanvas, 0, 0, mapW, mapH); g.globalAlpha = 1;
     }
     if (roadCanvas) g.drawImage(roadCanvas, 0, 0, mapW, mapH);
     g.restore();
@@ -179,11 +180,16 @@
     });
   }
   function positionNodes() {                    // place dots under the current camera (cheap)
+    const fcView = ST.panel === 'forecast';
     for (const { el, p } of phEls) { const [x, y] = toScreen(p.lat, p.lon);
       el.style.left = x + 'px'; el.style.top = y + 'px';
-      el.style.display = (x < -20 || x > mapW + 20 || y < -20 || y > mapH + 20) ? 'none' : ''; }
+      // hide phantom rings in Forecast view so the coral 'rising' markers read clearly
+      el.style.display = (fcView || x < -20 || x > mapW + 20 || y < -20 || y > mapH + 20) ? 'none' : ''; }
     for (const { el, j } of nodeEls) { const [x, y] = toScreen(j.lat, j.lon);
       el.style.left = x + 'px'; el.style.top = y + 'px'; el.classList.toggle('sel', ST.sel === j.name);
+      // when the Forecast panel is open, light up the junctions the model says will worsen
+      el.classList.toggle('rising', fcView && !!j.fc && j.fc.dir === 'up');
+      el.classList.toggle('dim', fcView && !(j.fc && j.fc.dir === 'up'));
       el.style.display = (x < -30 || x > mapW + 30 || y < -30 || y > mapH + 30) ? 'none' : ''; }
   }
   let rafPending = false;
@@ -284,20 +290,23 @@
     const risers = ST.J.filter((j) => j.fc && j.fc.dir === 'up').sort((a, b) => b.fc.delta_pct - a.fc.delta_pct);
     const list = risers.length ? risers.map((j) => {
       const why = j.fc.reasons && j.fc.reasons.length ? `Mostly ${j.fc.reasons.join(' and ')}.` : '';
-      return `<div class="riser ${j.fc.dir}" data-name="${j.name}" tabindex="0" role="button" aria-label="${j.name}, ${signpct(j.fc.delta_pct)} next week">
-        <span class="rn">${j.name}</span><span class="rd ${j.fc.dir}">${signpct(j.fc.delta_pct)}</span>
+      return `<div class="riser ${j.fc.dir}" data-name="${j.name}" tabindex="0" role="button" aria-label="${j.name}, ${signpct(j.fc.delta_pct)} next week, tap to locate">
+        <span class="rn">${j.name}</span><span class="rd ${j.fc.dir}">${signpct(j.fc.delta_pct)} <span class="loc">locate ›</span></span>
         <span class="rw">${why} Pressure today ${j.pressure}/100.</span></div>`;
     }).join('') : '<div class="note">No junctions are predicted to worsen next week.</div>';
-    return `<div class="r2big"><div class="r2">${m.r2}</div><div class="r2l">accuracy (R²) on weeks <b>${m.test_weeks[0]}–${m.test_weeks[m.test_weeks.length - 1]}</b> the model never saw while training <span class="badge ai">AI</span></div></div>` +
+    return `<div class="usebar">Use this to <b>pre-position officers before next week</b>. The ${mc.n_rising} junctions ` +
+      `the model expects to worsen are <b style="color:var(--coral)">ringed in coral on the map</b> right now — ` +
+      `tap any one (here or on the map) to see it and its plan.</div>` +
+      `<div class="r2big"><div class="r2">${m.r2}</div><div class="r2l">accuracy (R²) on weeks <b>${m.test_weeks[0]}–${m.test_weeks[m.test_weeks.length - 1]}</b> the model never saw while training <span class="badge ai">AI</span></div></div>` +
       `<div class="mstats">` +
       `<div class="mstat win"><div class="v">+${m.improvement_pct}%</div><div class="k">more accurate than "next week = last week"</div></div>` +
       `<div class="mstat"><div class="v">${m.baseline_r2}</div><div class="k">that naive baseline's R²</div></div>` +
       `<div class="mstat"><div class="v">${m.n_test.toLocaleString()}</div><div class="k">held-out predictions graded</div></div>` +
       `<div class="mstat"><div class="v">${mc.n_rising}</div><div class="k">junctions flagged as worsening</div></div></div>` +
       `<div class="slab">What the forecast leans on</div>${imp}` +
-      `<div class="slab">Predicted to worsen next week <span class="badge ai">AI</span></div>${list}` +
+      `<div class="slab">Predicted to worsen next week <span class="badge ai">AI</span> · tap to locate</div>${list}` +
       `<div class="note">Interpretable gradient-boosted trees + SHAP — never a neural net, so every call can be ` +
-      `explained. Built on the parking data's own weekly trend.</div>`;
+      `explained. This is the model's own call — independent of the priority sliders.</div>`;
   }
 
   function renderDeployStatic() {
@@ -338,16 +347,29 @@
     const defs = [['chronic', 'How bad the parking is', 'big vehicles, main roads, footpaths'],
       ['blindness', 'Evening blind spot', 'how little it is checked after 3pm'],
       ['volume', 'Number of cases', 'sheer count of tickets']];
-    return defs.map(([k, nm, hint]) => `<div class="wrow"><div class="top"><span class="nm">${nm}</span><span class="val" id="wv-${k}"></span></div>` +
-      `<input type="range" min="0" max="100" id="w-${k}" aria-label="${nm} importance"><div class="hint">${hint}</div></div>`).join('') +
+    return `<div class="usebar">Decide what "worst" means. Drag a slider and the whole city re-ranks instantly — ` +
+      `the map recolours and this <b>live top-5 reorders</b> in front of you. ▲▼ shows each junction's move ` +
+      `vs the recommended weighting.</div>` +
+      defs.map(([k, nm, hint]) => `<div class="wrow"><div class="top"><span class="nm">${nm}</span><span class="val" id="wv-${k}"></span></div>` +
+        `<input type="range" min="0" max="100" id="w-${k}" aria-label="${nm} importance"><div class="hint">${hint}</div></div>`).join('') +
       `<button class="resetw" id="resetw">Reset to recommended</button>` +
-      `<div class="note">This is the scoring, in the open. Drag what matters and the whole city re-ranks instantly — on the map and in the list. Nothing is hidden.</div>`;
+      `<div class="slab" style="margin-top:20px">Top priorities right now</div><div class="wpreview" id="wpreview"></div>`;
+  }
+  function updateWPreview() {
+    const el = $('#wpreview'); if (!el) return;
+    const def = {}; ST.data.junctions.forEach((j, i) => { def[j.name] = i; });   // recommended-weight order
+    el.innerHTML = ST.J.slice(0, 5).map((j, i) => {
+      const mv = (def[j.name] ?? i) - i;     // +ve = moved up vs the recommended ranking
+      const tag = mv > 0 ? `<span class="mv up">▲${mv}</span>` : mv < 0 ? `<span class="mv down">▼${-mv}</span>` : '<span class="mv flat">—</span>';
+      return `<div class="wprow ${i === 0 ? 'top' : ''}"><span class="rk">${i + 1}</span>` +
+        `<span class="nm">${j.name}</span>${tag}<span class="pv" style="background:${heat(j.pressure)}">${j.pressure}</span></div>`;
+    }).join('');
   }
   function wireAdjust() {
     const sync = () => { const s = ST.weights.chronic + ST.weights.blindness + ST.weights.volume || 1;
       ['chronic', 'blindness', 'volume'].forEach((k) => { $('#w-' + k).value = Math.round(ST.weights[k] * 100);
         $('#wv-' + k).textContent = Math.round(100 * ST.weights[k] / s) + '%'; }); };
-    sync();
+    sync(); updateWPreview();
     ['chronic', 'blindness', 'volume'].forEach((k) => $('#w-' + k).addEventListener('input', () => {
       ST.weights[k] = (+$('#w-' + k).value) / 100;
       const s = ST.weights.chronic + ST.weights.blindness + ST.weights.volume || 1;
@@ -373,6 +395,7 @@
     $('#hint').style.display = 'none';
     if (isMobile()) $('#scrim').classList.add('on');
     $$('.nav button').forEach((b) => b.classList.toggle('active', b.dataset.panel === name));
+    render();   // refresh map markers (forecast 'rising' highlight, selection) for the new panel
   }
   function closePanel() {
     ST.panel = null; ST.sel = null;
@@ -389,6 +412,7 @@
     if (ST.panel === 'priorities') $('#pbody').innerHTML = renderPriorities();
     else if (ST.panel === 'deploy') updateDeploy();
     else if (ST.panel === 'forecast') $('#pbody').innerHTML = renderForecastBody();
+    else if (ST.panel === 'adjust') updateWPreview();
     else if (ST.panel === 'junction' && ST.sel) $('#pbody').innerHTML = renderJunction(ST.sel);
   }
 
